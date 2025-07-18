@@ -1,0 +1,66 @@
+{
+  "name": "BorçTakip - Borç Yönetimi Uygulaması",
+  "short_name": "BorçTakip",
+  "description": "Borçlarınızı kolayca takip edin ve yönetin",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Hızlı Borç Ekle",
+      "short_name": "Borç Ekle",
+      "description": "Yeni borç kaydı ekleyin",
+      "url": "/?action=add-debt",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Borç Durumu",
+      "short_name": "Durum",
+      "description": "Borç durumunuzu görüntüleyin",
+      "url": "/?action=dashboard",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "categories": ["finance", "productivity", "utilities"],
+  "lang": "tr-TR",
+  "dir": "ltr"
+}

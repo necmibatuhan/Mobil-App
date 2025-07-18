@@ -5,6 +5,128 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
+// Turkish translations
+const tr = {
+  app: {
+    name: 'BorçTakip',
+    welcome: 'Hoş geldiniz!',
+    joinUs: 'Bize katılın!'
+  },
+  auth: {
+    login: 'Giriş Yap',
+    register: 'Kayıt Ol',
+    logout: 'Çıkış Yap',
+    email: 'E-posta Adresi',
+    password: 'Şifre',
+    fullName: 'Ad Soyad',
+    emailPlaceholder: 'E-posta adresinizi girin',
+    passwordPlaceholder: 'Şifrenizi girin',
+    fullNamePlaceholder: 'Ad ve soyadınızı girin',
+    processing: 'İşleniyor...',
+    signIn: 'Giriş Yap',
+    signUp: 'Kayıt Ol',
+    noAccount: 'Hesabınız yok mu? Kayıt olun',
+    hasAccount: 'Hesabınız var mı? Giriş yapın',
+    loginError: 'Giriş yapılırken bir hata oluştu',
+    registerError: 'Kayıt olurken bir hata oluştu',
+    invalidCredentials: 'Geçersiz e-posta veya şifre',
+    emailAlreadyExists: 'Bu e-posta adresi zaten kayıtlı'
+  },
+  dashboard: {
+    title: 'Gösterge Paneli',
+    loading: 'Gösterge paeli yükleniyor...',
+    totalOwed: 'Toplam Borç',
+    totalToCollect: 'Toplam Alacak',
+    netBalance: 'Net Bakiye',
+    activeDebts: 'Aktif Borçlar',
+    quickAdd: 'Hızlı Ekle',
+    keyInsights: 'Önemli Bilgiler',
+    personOweMost: 'En çok borçlu olduğunuz kişi',
+    mostOverdue: 'En çok geciken borç',
+    noDebts: 'Henüz borç kaydınız yok',
+    noDebtsDesc: 'İlk borç kaydınızı ekleyerek başlayın',
+    days: 'gün',
+    none: 'Yok'
+  },
+  debt: {
+    yourDebts: 'Borçlarınız',
+    youOwe: 'Borçlusunuz',
+    theyOwe: 'Alacaklısınız',
+    markPaid: 'Ödendi Olarak İşaretle',
+    markUnpaid: 'Ödenmedi Olarak İşaretle',
+    addDebt: 'Yeni Borç Ekle',
+    editDebt: 'Borç Düzenle',
+    deleteDebt: 'Borç Sil',
+    debtType: 'Borç Türü',
+    iOwe: 'Ben borçluyum',
+    theyOweMe: 'O bana borçlu',
+    personName: 'Kişi Adı',
+    personNamePlaceholder: 'Kişinin adını girin',
+    amount: 'Tutar',
+    amountPlaceholder: '0,00',
+    currency: 'Para Birimi',
+    category: 'Kategori',
+    description: 'Açıklama',
+    descriptionPlaceholder: 'Bu borç hakkında açıklama yazın...',
+    dueDate: 'Vade Tarihi',
+    dueDateOptional: 'Vade Tarihi (İsteğe Bağlı)',
+    noDueDate: 'Vade tarihi yok',
+    cancel: 'İptal',
+    save: 'Kaydet',
+    adding: 'Ekleniyor...',
+    saving: 'Kaydediliyor...',
+    deleting: 'Siliniyor...',
+    delete: 'Sil',
+    edit: 'Düzenle',
+    due: 'Vade',
+    overdue: 'Gecikmiş',
+    paid: 'Ödendi',
+    unpaid: 'Ödenmedi',
+    partiallyPaid: 'Kısmen Ödendi',
+    active: 'Aktif',
+    status: 'Durum'
+  },
+  category: {
+    personalLoan: 'Kişisel Kredi',
+    rent: 'Kira',
+    sharedExpense: 'Ortak Gider',
+    businessLoan: 'İş Kredisi',
+    education: 'Eğitim',
+    other: 'Diğer'
+  },
+  currency: {
+    try: 'TRY',
+    usd: 'USD',
+    eur: 'EUR'
+  },
+  messages: {
+    success: 'Başarılı',
+    error: 'Hata',
+    debtAdded: 'Borç başarıyla eklendi',
+    debtUpdated: 'Borç başarıyla güncellendi',
+    debtDeleted: 'Borç başarıyla silindi',
+    debtMarkedPaid: 'Borç ödendi olarak işaretlendi',
+    debtMarkedUnpaid: 'Borç ödenmedi olarak işaretlendi',
+    networkError: 'Ağ hatası oluştu',
+    unknownError: 'Bilinmeyen bir hata oluştu',
+    fillAllFields: 'Lütfen tüm alanları doldurun',
+    confirmDelete: 'Bu borcu silmek istediğinizden emin misiniz?',
+    installApp: 'Uygulamayı Yükle',
+    installAppDesc: 'Bu uygulamayı ana ekranınıza ekleyerek daha kolay erişim sağlayın',
+    notificationsEnabled: 'Bildirimler etkinleştirildi',
+    notificationsDisabled: 'Bildirimler devre dışı bırakıldı'
+  },
+  pwa: {
+    installPrompt: 'Bu uygulamayı telefonunuza yükleyebilirsiniz',
+    install: 'Yükle',
+    later: 'Daha Sonra',
+    offlineMode: 'Çevrimdışı Mod',
+    onlineMode: 'Çevrimiçi Mod',
+    updateAvailable: 'Güncelleme Mevcut',
+    updateApp: 'Uygulamayı Güncelle'
+  }
+};
+
 // Auth Context
 const AuthContext = createContext();
 
@@ -47,6 +169,65 @@ const useAuth = () => {
   return context;
 };
 
+// PWA Hook
+const usePWA = () => {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const installApp = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+        setIsInstallable(false);
+      }
+    }
+  };
+
+  return { isInstallable, installApp };
+};
+
+// Notification Hook
+const useNotifications = () => {
+  const [permission, setPermission] = useState(Notification.permission);
+
+  const requestPermission = async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      setPermission(permission);
+      return permission === 'granted';
+    }
+    return false;
+  };
+
+  const showNotification = (title, options) => {
+    if (permission === 'granted') {
+      new Notification(title, {
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        ...options
+      });
+    }
+  };
+
+  return { permission, requestPermission, showNotification };
+};
+
 // Components
 const LoginForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -69,7 +250,8 @@ const LoginForm = () => {
       const response = await axios.post(`${API}${endpoint}`, formData);
       login(response.data);
     } catch (err) {
-      setError(err.response?.data?.detail || 'An error occurred');
+      const errorMessage = err.response?.data?.detail || tr.messages.unknownError;
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -87,11 +269,11 @@ const LoginForm = () => {
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-2xl font-bold">💰</span>
+            <span className="text-white text-2xl font-bold">₺</span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">DebtTracker</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{tr.app.name}</h1>
           <p className="text-gray-600 mt-2">
-            {isLogin ? 'Welcome back!' : 'Join us today!'}
+            {isLogin ? tr.app.welcome : tr.app.joinUs}
           </p>
         </div>
 
@@ -105,7 +287,7 @@ const LoginForm = () => {
           {!isLogin && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
+                {tr.auth.fullName}
               </label>
               <input
                 type="text"
@@ -114,14 +296,14 @@ const LoginForm = () => {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter your full name"
+                placeholder={tr.auth.fullNamePlaceholder}
               />
             </div>
           )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
+              {tr.auth.email}
             </label>
             <input
               type="email"
@@ -130,13 +312,13 @@ const LoginForm = () => {
               onChange={handleChange}
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter your email"
+              placeholder={tr.auth.emailPlaceholder}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
+              {tr.auth.password}
             </label>
             <input
               type="password"
@@ -145,7 +327,7 @@ const LoginForm = () => {
               onChange={handleChange}
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter your password"
+              placeholder={tr.auth.passwordPlaceholder}
             />
           </div>
 
@@ -154,7 +336,7 @@ const LoginForm = () => {
             disabled={loading}
             className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
           >
-            {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+            {loading ? tr.auth.processing : (isLogin ? tr.auth.signIn : tr.auth.signUp)}
           </button>
         </form>
 
@@ -163,8 +345,66 @@ const LoginForm = () => {
             onClick={() => setIsLogin(!isLogin)}
             className="text-blue-500 hover:text-blue-600 font-medium"
           >
-            {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+            {isLogin ? tr.auth.noAccount : tr.auth.hasAccount}
           </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const InstallPrompt = () => {
+  const { isInstallable, installApp } = usePWA();
+  const [showPrompt, setShowPrompt] = useState(false);
+
+  useEffect(() => {
+    if (isInstallable) {
+      const hasSeenPrompt = localStorage.getItem('pwa-install-prompt-seen');
+      if (!hasSeenPrompt) {
+        setShowPrompt(true);
+      }
+    }
+  }, [isInstallable]);
+
+  const handleInstall = () => {
+    installApp();
+    setShowPrompt(false);
+    localStorage.setItem('pwa-install-prompt-seen', 'true');
+  };
+
+  const handleDismiss = () => {
+    setShowPrompt(false);
+    localStorage.setItem('pwa-install-prompt-seen', 'true');
+  };
+
+  if (!showPrompt) return null;
+
+  return (
+    <div className="fixed bottom-4 left-4 right-4 z-50">
+      <div className="bg-white rounded-lg shadow-lg p-4 border border-gray-200">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <h3 className="font-medium text-gray-900 mb-1">
+              {tr.messages.installApp}
+            </h3>
+            <p className="text-sm text-gray-600">
+              {tr.messages.installAppDesc}
+            </p>
+          </div>
+          <div className="flex space-x-2 ml-4">
+            <button
+              onClick={handleDismiss}
+              className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700"
+            >
+              {tr.pwa.later}
+            </button>
+            <button
+              onClick={handleInstall}
+              className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
+            >
+              {tr.pwa.install}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -177,9 +417,11 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const { logout } = useAuth();
+  const { showNotification, requestPermission } = useNotifications();
 
   useEffect(() => {
     fetchDashboardData();
+    requestPermission();
   }, []);
 
   const fetchDashboardData = async () => {
@@ -200,9 +442,25 @@ const Dashboard = () => {
   const markAsPaid = async (debtId) => {
     try {
       await axios.post(`${API}/debts/${debtId}/mark-paid`);
+      showNotification(tr.messages.success, {
+        body: tr.messages.debtMarkedPaid
+      });
       fetchDashboardData();
     } catch (error) {
       console.error('Error marking debt as paid:', error);
+    }
+  };
+
+  const markAsUnpaid = async (debtId) => {
+    try {
+      // Implement endpoint for marking as unpaid
+      await axios.post(`${API}/debts/${debtId}/mark-unpaid`);
+      showNotification(tr.messages.success, {
+        body: tr.messages.debtMarkedUnpaid
+      });
+      fetchDashboardData();
+    } catch (error) {
+      console.error('Error marking debt as unpaid:', error);
     }
   };
 
@@ -215,7 +473,7 @@ const Dashboard = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'No due date';
+    if (!dateString) return tr.debt.noDueDate;
     return new Date(dateString).toLocaleDateString('tr-TR');
   };
 
@@ -228,14 +486,23 @@ const Dashboard = () => {
     }
   };
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'active': return tr.debt.active;
+      case 'paid': return tr.debt.paid;
+      case 'partially_paid': return tr.debt.partiallyPaid;
+      default: return status;
+    }
+  };
+
   const getCategoryLabel = (category) => {
     const labels = {
-      'personal_loan': 'Personal Loan',
-      'rent': 'Rent',
-      'shared_expense': 'Shared Expense',
-      'business_loan': 'Business Loan',
-      'education': 'Education',
-      'other': 'Other'
+      'personal_loan': tr.category.personalLoan,
+      'rent': tr.category.rent,
+      'shared_expense': tr.category.sharedExpense,
+      'business_loan': tr.category.businessLoan,
+      'education': tr.category.education,
+      'other': tr.category.other
     };
     return labels[category] || category;
   };
@@ -245,7 +512,7 @@ const Dashboard = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+          <p className="text-gray-600">{tr.dashboard.loading}</p>
         </div>
       </div>
     );
@@ -259,22 +526,22 @@ const Dashboard = () => {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-                <span className="text-white text-xl font-bold">💰</span>
+                <span className="text-white text-xl font-bold">₺</span>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900">DebtTracker</h1>
+              <h1 className="text-2xl font-bold text-gray-900">{tr.app.name}</h1>
             </div>
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowAddForm(true)}
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
               >
-                Quick Add
+                {tr.dashboard.quickAdd}
               </button>
               <button
                 onClick={logout}
                 className="text-gray-500 hover:text-gray-700"
               >
-                Logout
+                {tr.auth.logout}
               </button>
             </div>
           </div>
@@ -293,7 +560,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Owed</p>
+                <p className="text-sm font-medium text-gray-600">{tr.dashboard.totalOwed}</p>
                 <p className="text-2xl font-bold text-red-600">
                   {formatCurrency(stats?.total_owed || 0)}
                 </p>
@@ -309,7 +576,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">To Collect</p>
+                <p className="text-sm font-medium text-gray-600">{tr.dashboard.totalToCollect}</p>
                 <p className="text-2xl font-bold text-green-600">
                   {formatCurrency(stats?.total_to_collect || 0)}
                 </p>
@@ -325,7 +592,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Net Balance</p>
+                <p className="text-sm font-medium text-gray-600">{tr.dashboard.netBalance}</p>
                 <p className={`text-2xl font-bold ${(stats?.net_balance || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {formatCurrency(stats?.net_balance || 0)}
                 </p>
@@ -341,7 +608,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active Debts</p>
+                <p className="text-sm font-medium text-gray-600">{tr.dashboard.activeDebts}</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {stats?.active_debts_count || 0}
                 </p>
@@ -353,16 +620,16 @@ const Dashboard = () => {
         {/* Insights */}
         {stats && (
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Insights</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{tr.dashboard.keyInsights}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex items-center p-4 bg-orange-50 rounded-lg">
                 <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-4">
                   <span className="text-orange-600 text-lg">👤</span>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Person you owe most</p>
+                  <p className="text-sm text-gray-600">{tr.dashboard.personOweMost}</p>
                   <p className="font-semibold text-gray-900">
-                    {stats.person_owe_most || 'No debts'} 
+                    {stats.person_owe_most || tr.dashboard.none} 
                     {stats.person_owe_most && (
                       <span className="text-orange-600 ml-2">
                         {formatCurrency(stats.person_owe_most_amount)}
@@ -377,12 +644,12 @@ const Dashboard = () => {
                   <span className="text-purple-600 text-lg">⏰</span>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Most overdue debt</p>
+                  <p className="text-sm text-gray-600">{tr.dashboard.mostOverdue}</p>
                   <p className="font-semibold text-gray-900">
-                    {stats.most_overdue_debt || 'None'} 
+                    {stats.most_overdue_debt || tr.dashboard.none} 
                     {stats.most_overdue_debt && (
                       <span className="text-purple-600 ml-2">
-                        {stats.most_overdue_days} days
+                        {stats.most_overdue_days} {tr.dashboard.days}
                       </span>
                     )}
                   </p>
@@ -395,7 +662,7 @@ const Dashboard = () => {
         {/* Debts List */}
         <div className="bg-white rounded-xl shadow-sm">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Your Debts</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{tr.debt.yourDebts}</h3>
           </div>
           <div className="divide-y divide-gray-200">
             {debts.length === 0 ? (
@@ -403,8 +670,8 @@ const Dashboard = () => {
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-gray-400 text-2xl">📝</span>
                 </div>
-                <p className="text-lg font-medium">No debts yet</p>
-                <p className="text-sm">Start by adding your first debt record</p>
+                <p className="text-lg font-medium">{tr.dashboard.noDebts}</p>
+                <p className="text-sm">{tr.dashboard.noDebtsDesc}</p>
               </div>
             ) : (
               debts.map((debt) => (
@@ -415,17 +682,17 @@ const Dashboard = () => {
                         <div className={`w-3 h-3 rounded-full ${debt.debt_type === 'i_owe' ? 'bg-red-400' : 'bg-green-400'}`}></div>
                         <div>
                           <p className="text-sm font-medium text-gray-900">
-                            {debt.debt_type === 'i_owe' ? 'You owe' : 'They owe you'} {debt.person_name}
+                            {debt.debt_type === 'i_owe' ? tr.debt.youOwe : tr.debt.theyOwe} {debt.person_name}
                           </p>
                           <p className="text-sm text-gray-500">{debt.description}</p>
                         </div>
                       </div>
                       <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
                         <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(debt.status)}`}>
-                          {debt.status.replace('_', ' ')}
+                          {getStatusText(debt.status)}
                         </span>
                         <span>{getCategoryLabel(debt.category)}</span>
-                        <span>Due: {formatDate(debt.due_date)}</span>
+                        <span>{tr.debt.due}: {formatDate(debt.due_date)}</span>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -437,14 +704,24 @@ const Dashboard = () => {
                           {formatCurrency(debt.amount_in_try)} TRY
                         </p>
                       </div>
-                      {debt.status === 'active' && (
-                        <button
-                          onClick={() => markAsPaid(debt.id)}
-                          className="px-3 py-1 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 transition-colors"
-                        >
-                          Mark Paid
-                        </button>
-                      )}
+                      <div className="flex flex-col space-y-1">
+                        {debt.status === 'active' && (
+                          <button
+                            onClick={() => markAsPaid(debt.id)}
+                            className="px-3 py-1 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 transition-colors"
+                          >
+                            {tr.debt.markPaid}
+                          </button>
+                        )}
+                        {debt.status === 'paid' && (
+                          <button
+                            onClick={() => markAsUnpaid(debt.id)}
+                            className="px-3 py-1 bg-yellow-500 text-white text-sm rounded-lg hover:bg-yellow-600 transition-colors"
+                          >
+                            {tr.debt.markUnpaid}
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -461,6 +738,9 @@ const Dashboard = () => {
           onSuccess={fetchDashboardData}
         />
       )}
+
+      {/* PWA Install Prompt */}
+      <InstallPrompt />
     </div>
   );
 };
@@ -476,6 +756,7 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
     due_date: ''
   });
   const [loading, setLoading] = useState(false);
+  const { showNotification } = useNotifications();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -489,10 +770,16 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
       };
 
       await axios.post(`${API}/debts`, submitData);
+      showNotification(tr.messages.success, {
+        body: tr.messages.debtAdded
+      });
       onSuccess();
       onClose();
     } catch (error) {
       console.error('Error adding debt:', error);
+      showNotification(tr.messages.error, {
+        body: tr.messages.networkError
+      });
     } finally {
       setLoading(false);
     }
@@ -509,7 +796,7 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold">Add New Debt</h3>
+          <h3 className="text-lg font-semibold">{tr.debt.addDebt}</h3>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
@@ -521,7 +808,7 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Debt Type
+              {tr.debt.debtType}
             </label>
             <select
               name="debt_type"
@@ -529,14 +816,14 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="i_owe">I owe them</option>
-              <option value="they_owe">They owe me</option>
+              <option value="i_owe">{tr.debt.iOwe}</option>
+              <option value="they_owe">{tr.debt.theyOweMe}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Person Name
+              {tr.debt.personName}
             </label>
             <input
               type="text"
@@ -545,14 +832,14 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter person's name"
+              placeholder={tr.debt.personNamePlaceholder}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Amount
+                {tr.debt.amount}
               </label>
               <input
                 type="number"
@@ -563,13 +850,13 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
                 min="0"
                 step="0.01"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="0.00"
+                placeholder={tr.debt.amountPlaceholder}
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Currency
+                {tr.debt.currency}
               </label>
               <select
                 name="currency"
@@ -577,16 +864,16 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="TRY">TRY</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
+                <option value="TRY">{tr.currency.try}</option>
+                <option value="USD">{tr.currency.usd}</option>
+                <option value="EUR">{tr.currency.eur}</option>
               </select>
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category
+              {tr.debt.category}
             </label>
             <select
               name="category"
@@ -594,18 +881,18 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="personal_loan">Personal Loan</option>
-              <option value="rent">Rent</option>
-              <option value="shared_expense">Shared Expense</option>
-              <option value="business_loan">Business Loan</option>
-              <option value="education">Education</option>
-              <option value="other">Other</option>
+              <option value="personal_loan">{tr.category.personalLoan}</option>
+              <option value="rent">{tr.category.rent}</option>
+              <option value="shared_expense">{tr.category.sharedExpense}</option>
+              <option value="business_loan">{tr.category.businessLoan}</option>
+              <option value="education">{tr.category.education}</option>
+              <option value="other">{tr.category.other}</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
+              {tr.debt.description}
             </label>
             <textarea
               name="description"
@@ -614,13 +901,13 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
               required
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Describe this debt..."
+              placeholder={tr.debt.descriptionPlaceholder}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Due Date (Optional)
+              {tr.debt.dueDateOptional}
             </label>
             <input
               type="date"
@@ -637,14 +924,14 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
               onClick={onClose}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
             >
-              Cancel
+              {tr.debt.cancel}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
             >
-              {loading ? 'Adding...' : 'Add Debt'}
+              {loading ? tr.debt.adding : tr.debt.save}
             </button>
           </div>
         </form>
@@ -656,6 +943,19 @@ const AddDebtModal = ({ onClose, onSuccess }) => {
 // Main App
 function App() {
   const { token } = useAuth();
+
+  // Register service worker
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('SW registered: ', registration);
+        })
+        .catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
+    }
+  }, []);
 
   return (
     <div className="App">
