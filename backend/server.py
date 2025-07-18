@@ -311,6 +311,19 @@ async def mark_debt_paid(debt_id: str, current_user: User = Depends(get_current_
     
     return {"message": "Debt marked as paid"}
 
+@api_router.post("/debts/{debt_id}/mark-unpaid")
+async def mark_debt_unpaid(debt_id: str, current_user: User = Depends(get_current_user)):
+    debt = await db.debts.find_one({"id": debt_id, "user_id": current_user.id})
+    if not debt:
+        raise HTTPException(status_code=404, detail="Debt not found")
+    
+    await db.debts.update_one(
+        {"id": debt_id, "user_id": current_user.id},
+        {"$set": {"status": DebtStatus.ACTIVE, "paid_at": None, "updated_at": datetime.utcnow()}}
+    )
+    
+    return {"message": "Debt marked as unpaid"}
+
 # Dashboard Routes
 @api_router.get("/dashboard/stats", response_model=DashboardStats)
 async def get_dashboard_stats(current_user: User = Depends(get_current_user)):
